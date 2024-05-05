@@ -1,0 +1,63 @@
+# TASK-4 (DATA SCIENCE)
+# SALES PREDICTION USING PYTHON
+# BY - AVNEET KAUR BAL
+df=pd.read_csv('advertising.csv')
+df.head()
+df.shape
+df.info()
+df.describe()
+df.isnull().sum()
+# Data visualising
+sns.scatterplot(x=df['TV'],y=df['Sales'])
+sns.scatterplot(x=df['Radio'],y=df['Sales'],color='r')
+sns.scatterplot(x=df['Newspaper'],y=df['Sales'],color='g')
+sns.lmplot(x='TV',y='Sales',data=df)
+sns.lmplot(x='Radio',y='Sales',data=df)
+sns.lmplot(x='Newspaper',y='Sales',data=df)
+import matplotlib.pyplot as plt
+plt.figure(figsize=(10,7))
+
+plt.subplot(221)
+plt.hist(df['TV'],color='y')
+plt.title('TV')
+
+plt.subplot(222)
+plt.hist(df['Radio'],color='r')
+plt.title('Radio')
+
+plt.subplot(223)
+plt.hist(df['Newspaper'],color='g')
+plt.title('Newspaper')
+
+plt.subplot(224)
+plt.hist(df['Sales'],color='b')
+plt.title('Sales')
+sns.heatmap(df.corr(),annot=True)
+# Data Modelling
+X=df[['TV']]
+y=df[['Sales']]
+from sklearn.model_selection import train_test_split
+X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,random_state=2)
+from sklearn.linear_model import LinearRegression
+ml=LinearRegression()
+ml.fit(X_train,y_train)
+# Data prediction
+X_train_prediction=ml.predict(X_train)
+print(X_train_prediction)
+y_train
+print(ml.coef_)
+print(ml.intercept_)
+X_test_prediction=ml.predict(X_test)
+print(X_test_prediction)
+print(y_test)
+plt.figure(figsize=[7,5])
+plt.scatter(y_train,X_train_prediction)
+plt.xlabel("original values")
+plt.ylabel("predicted values")
+plt.title("original values vs predicted values")
+plt.figure(figsize=[7,5])
+plt.scatter(y_test,X_test_prediction)
+plt.xlabel("original values")
+plt.ylabel("predicted values")
+plt.title("original values vs predicted values")
+

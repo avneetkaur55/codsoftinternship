@@ -1,0 +1,80 @@
+# TASK-1 (DATA SCIENCE)
+# TITANIC SURVIVAL PREDICTION
+# BY - AVNEET KAUR BAL
+!pip install opendatasets
+import opendatasets as od
+dataset="https://www.kaggle.com/datasets/yasserh/titanic-dataset"
+od.download(dataset)
+import os
+data="./titanic-dataset"
+os.listdir(data)
+import pandas as pd
+titanic_df=pd.read_csv('Titanic-Dataset.csv')
+titanic_df.head()
+titanic_df.describe()
+titanic_df.info()
+titanic_df.isnull().sum()
+# Handling missing values
+# There are null values in age, cabin and embarked
+titanic_df['Age'].fillna(titanic_df['Age'].median(),inplace=True)
+
+# checking embarked data
+titanic_df['Embarked'].value_counts()
+# Since 'S' is maximum so we replace 2 missing values with 'S'
+titanic_df['Embarked'].fillna('S',inplace=True)
+# cabin contains many missing values so remove that column
+titanic_df.drop(columns="Cabin",inplace=True)
+titanic_df.isnull().sum()
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+titanic_df["Survived"].value_counts()
+titanic_df.groupby("Sex").Survived.value_counts()
+# Data Visualisation
+sns.countplot(x=titanic_df["Survived"])
+sns.countplot(x=titanic_df['Survived'],hue=titanic_df['Sex'])
+plt.show()
+sns.countplot(x=titanic_df['Survived'],hue=titanic_df['Pclass'])
+sns.histplot(x=titanic_df['Age'],hue=titanic_df['Survived'],multiple="stack")
+# Data modelling
+from sklearn.preprocessing import LabelEncoder
+labelencoder=LabelEncoder()
+titanic_df['Sex']=labelencoder.fit_transform(titanic_df['Sex'])
+X=titanic_df[['Sex','Pclass']]
+Y=titanic_df['Survived']
+from sklearn.model_selection import train_test_split
+X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.2,random_state=2)
+print(X.shape,X_train.shape,X_test.shape)
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score,precision_score,confusion_matrix
+logg=LogisticRegression(random_state=2)
+logg.fit(X_train,Y_train)
+# Data prediction model
+train_prediction=logg.predict(X_train)
+train_prediction
+train_accuracy=("Accuracy_score:",accuracy_score(Y_train,train_prediction))
+print(train_accuracy)
+test_prediction=logg.predict(X_test)
+test_prediction
+test_accuracy=("Accuracy_score:",accuracy_score(Y_test,test_prediction))
+print(test_accuracy)
+print("Matrix:",confusion_matrix(Y_test,test_prediction))
+Y_test
+submission=X.iloc[:,:].values
+Y_final=logg.predict(submission)
+Y_final.shape
+final=pd.DataFrame()
+final['Sex']=X['Sex']
+final['Survived']=Y_final
+final.to_csv("submission.csv",index=False)
+import warnings
+warnings.filterwarnings("ignore")
+
+result=logg.predict([[6,0]])
+if (result==0):
+    print("not survived")
+else:
+    print("survived")

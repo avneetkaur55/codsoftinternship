@@ -1,0 +1,48 @@
+
+# TASK-3 (DATA SCIENCE)
+# IRIS FLOWER CLASSIFICATION
+# BY - AVNEET KAUR BAL
+pip install opendatasets
+import opendatasets as od
+dataset="https://www.kaggle.com/datasets/arshid/iris-flower-dataset"
+od.download(dataset)
+import os
+data="./iris-flower-dataset"
+os.listdir(data)
+import pandas as pd
+import numpy as np
+import seaborn as sns
+iris_df=pd.read_csv("IRIS.csv")
+iris_df.head()
+iris_df.describe()
+iris_df.info()
+iris_df.isnull().sum()
+iris_df['species'].unique()
+# EDA
+sns.pairplot(iris_df,hue='species')
+iris_df.corr()
+sns.heatmap(iris_df.corr())
+iris_df['species']=iris_df['species'].map({'Iris-setosa':0,'Iris-versicolor':1,'Iris-virginica':2})
+iris_df.head()
+# split data into independant and dependant features
+X=iris_df.iloc[:,:-1]
+y=iris_df.iloc[:,-1]
+X
+y
+from sklearn.model_selection import train_test_split
+X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.20,random_state=4)
+from sklearn.linear_model import LogisticRegression
+classifier=LogisticRegression()
+from sklearn.model_selection import GridSearchCV
+parameter={'penalty':['l1','l2','elasticnet'],'C':[1,2,3,4,5,6,10,20,30,40],'max_iter':[100,200,300]}
+classifier_regressor=GridSearchCV(classifier,param_grid=parameter,scoring='accuracy',cv=5)
+classifier_regressor.fit(X_train,y_train)
+print(classifier_regressor.best_params_)
+print(classifier_regressor.best_score_)
+# prediction
+y_pred=classifier_regressor.predict(X_test)
+# accuracy score
+from sklearn .metrics import accuracy_score,classification_report
+score=accuracy_score(y_pred,y_test)
+print(score)
+print(classification_report(y_pred,y_test))
